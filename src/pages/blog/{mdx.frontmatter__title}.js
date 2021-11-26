@@ -2,6 +2,7 @@ import * as React from "react";
 import Layout from "../../components/layout";
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 
 // how does gatsby know $id? Does it know to look in
 // props.pageContext.id??
@@ -16,6 +17,14 @@ export const query = graphql`
       frontmatter {
         title
         date(formatString: "MMMM D, YYYY")
+        hero_image_alt
+        hero_image_credit_link
+        hero_image_credit_text
+        hero_image {
+          childImageSharp {
+            gatsbyImageData
+          }
+        }
       }
       body
     }
@@ -25,9 +34,21 @@ export const query = graphql`
 // (props) is from gatsby file system route api
 // ({data}) is results from gatsby's page query
 const BlogPost = ({ data }) => {
+  const title = data.mdx.frontmatter.title;
+  const heroImage = getImage(data.mdx.frontmatter.hero_image);
+  const heroImageAlt = data.mdx.frontmatter.hero_image_alt;
+  const body = data.mdx.body;
+
   return (
-    <Layout pageTitle={data.mdx.frontmatter.title}>
-      <MDXRenderer>{data.mdx.body}</MDXRenderer>
+    <Layout pageTitle={title}>
+      <GatsbyImage image={heroImage} alt={heroImageAlt}></GatsbyImage>
+      <p>
+        Photo Credit:{" "}
+        <a href={data.mdx.frontmatter.hero_image_credit_link}>
+          {data.mdx.frontmatter.hero_image_credit_text}
+        </a>
+      </p>
+      <MDXRenderer>{body}</MDXRenderer>
     </Layout>
   );
 };
