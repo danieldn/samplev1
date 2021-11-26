@@ -1,17 +1,7 @@
 import * as React from "react";
-import Layout from "../components/layout";
-import { graphql } from "gatsby";
-import { MDXRenderer } from "gatsby-plugin-mdx";
-
-// export const query = graphql`
-//   {
-//     allFile(filter: { sourceInstanceName: { eq: "blog" } }) {
-//       nodes {
-//         name
-//       }
-//     }
-//   }
-// `;
+import Layout from "../../components/layout";
+import { Link, graphql } from "gatsby";
+import slugify from "@sindresorhus/slugify";
 
 export const query = graphql`
   {
@@ -22,7 +12,6 @@ export const query = graphql`
           title
         }
         id
-        body
       }
     }
   }
@@ -31,9 +20,17 @@ export const query = graphql`
 const BlogPage = ({ data }) => {
   const blogs = data.allMdx.nodes.map((node) => (
     <article key={node.id}>
-      <h1>{node.frontmatter.title}</h1>
+      <h2>
+        {/* why <a> slower than <Link>? */}
+        {/* answer: preloading */}
+        {/* <a href={`/blog/${slugify(node.frontmatter.title)}/`}>
+          {node.frontmatter.title}
+        </a> */}
+        <Link to={`/blog/${slugify(node.frontmatter.title)}`}>
+          {node.frontmatter.title}
+        </Link>
+      </h2>
       <p>Posted: {node.frontmatter.date}</p>
-      <MDXRenderer>{node.body}</MDXRenderer>
     </article>
   ));
 
